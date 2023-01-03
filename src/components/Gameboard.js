@@ -7,6 +7,7 @@ const Gameboard = props => {
   const [board, setBoard] = useState([]);
   const [display, setDisplay] = useState(null);
   const [select, setSelect] = useState(null);
+  const [started, setStarted] = useState(false);
 
   /* Initial populate */
   useEffect(() => {
@@ -23,6 +24,7 @@ const Gameboard = props => {
       newBoard.push(piece);
     }
     setBoard(newBoard);
+    setStarted(true);
   }, []);
 
   /* draw board */
@@ -111,7 +113,7 @@ const Gameboard = props => {
       } else if (clicked === selected - WIDTH) {
         // Can only swap if a score can happen
         const scores = (
-          ((selected / WIDTH | 0) < WIDTH - 3 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
+          ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
           || ((selected / WIDTH | 0) > 2 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
           || (selected % WIDTH > 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
           || (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
@@ -138,6 +140,77 @@ const Gameboard = props => {
     };
 
   }, [board, select, WIDTH]);
+
+  /* Check for groups to pop (lines >= 3) */
+  useEffect(() => {
+    if (!started) return;
+    const lines = [];
+    // Horizontal check
+    for (let i = 0; i < WIDTH; i++) {
+      for (let j = 0; j < WIDTH - 2; j++) {
+        const line = [WIDTH * i + j];
+        if (board[line[0]] === 'NONE') continue;
+        let r = WIDTH * i + j + 1;
+        while (r % WIDTH !== 0 && board[r] !== 'NONE' && board[r] === board[line[0]]) {
+          line.push(r);
+          r++;
+        }
+        if (line.length >= 3) {
+          lines.push(line);
+          j = r - 1;
+        }
+      }
+    }
+    // Vertical check
+    for (let i = 0; i < WIDTH; i++) {
+      for (let j = 0; j < WIDTH - 2; j++) {
+        const line = [WIDTH * j + i];
+        if (board[line[0]] === 'NONE') continue;
+        let r = WIDTH * (j + 1) + i;
+        while (r < board.length && board[r] !== 'NONE' && board[r] === board[line[0]]) {
+          line.push(r);
+          r += WIDTH;
+        }
+        if (line.length >= 3) {
+          lines.push(line);
+          j = ((r - i) / WIDTH) - 1;
+        }
+      }
+    }
+
+    if(lines.length < 1) return;
+
+    // Pop lines
+    let temp = board;
+    for (const line of lines) {
+      for (const space of line) {
+        temp = [...temp.slice(0, space), 'NONE', ...temp.slice(space + 1)];
+      }
+    }
+    setBoard(temp);
+
+    // Drop lines
+    for (let i = 0; i < temp.length; i++) {
+      if (i + WIDTH < temp.length && temp[i + WIDTH] === 'NONE') {
+        for (let j = i + WIDTH; j >= 0; j -= WIDTH) {
+          if (j > WIDTH) {
+            temp = [...temp.slice(0, j), temp[j - WIDTH], ...temp.slice(j + 1)];
+          } else {
+            temp = [...temp.slice(0, j), 'NONE', ...temp.slice(j + 1)];
+          }
+        }
+      }
+    }
+    setBoard(temp);
+
+    // Fill empty spaces
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i] === 'NONE' || temp[i] === undefined) {
+        temp = [...temp.slice(0, i), PIECES[Math.random() * PIECES.length | 0], ...temp.slice(i + 1)];
+      }
+    }
+    setBoard(temp);
+  }, [board, WIDTH, started])
 
   return (
     <div id='gameboard'>
