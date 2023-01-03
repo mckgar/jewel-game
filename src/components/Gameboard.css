@@ -1,0 +1,58 @@
+#gameboard {
+  border: 2px solid black;
+  width: min(80vh, 100vw);
+  aspect-ratio: 1 / 1;
+
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.board-piece {
+  align-self: center;
+  justify-self: center;
+  width: 80%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1000px;
+}
+
+.true {
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.WHITE {
+  background-color: bisque;
+}
+
+.RED {
+  background-color: red;
+}
+
+.BLUE {
+  background-color: blue;
+}
+
+.GREEN {
+  background-color: green;
+}
+
+.PURPLE {
+  background-color: purple;
+}
+
+.ORANGE {
+  background-color: orange;
+}
+
+.YELLOW {
+  background-color: yellow;
+}

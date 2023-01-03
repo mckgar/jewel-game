@@ -1,9 +1,10 @@
 import './App.css';
+import Gameboard from './components/Gameboard';
 
 function App() {
   return (
     <div className="App">
-      <h1>Under Construction</h1>
+      <Gameboard />
     </div>
   );
 }
