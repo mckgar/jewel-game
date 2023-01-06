@@ -16,18 +16,7 @@
   border-radius: 1000px;
 }
 
-.true {
-  animation: spin 0.85s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotateY(0deg);
-  }
-  to {
-    transform: rotateY(360deg);
-  }
-}
+/* Gem Colors */
 
 .WHITE {
   background-color:gray;
@@ -55,4 +44,33 @@
 
 .YELLOW {
   background-color: gold;
+}
+
+/******************ANIMATIONS******************/
+
+/* Gem select animation */
+
+.selected-true {
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Gem swap animation */
+
+.board-piece {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Gem break animation */
+
+.NONE {
+  transition: background-color 0.3s ease-out;
 }

@@ -4,10 +4,16 @@ import './Gameboard.css';
 const Gameboard = props => {
   const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'ORANGE', 'YELLOW'];
   const WIDTH = props.width || 8;
+  const DELAY = 300;
   const [board, setBoard] = useState([]);
   const [display, setDisplay] = useState(null);
   const [select, setSelect] = useState(null);
+
   const [started, setStarted] = useState(false);
+
+  const [pop, setPop] = useState(false);
+  const [drop, setDrop] = useState(false);
+  const [repopulate, setRepopulate] = useState(false);
 
   /* Initial populate */
   useEffect(() => {
@@ -33,14 +39,29 @@ const Gameboard = props => {
       return <div
         key={index}
         id={index}
-        className={`board-piece ${piece} ${select === index}`}
+        className={`board-piece ${piece} selected-${select === index}`}
         onClick={e => handleClick(e)}
       ></div>;
     }));
 
     const handleClick = e => {
-      const clicked = parseInt(e.target.id);
-      const selected = parseInt(select);
+      handleSwap(parseInt(e.target.id), parseInt(select));
+    }
+
+    const handleSwap = (clicked, selected) => {
+      if (!selected) {
+        setSelect(clicked);
+        return;
+      }
+      if (clicked === selected) {
+        setSelect(null);
+        return;
+      }
+      const gem1 = document.getElementById(clicked);
+      const gem2 = document.getElementById(selected);
+      gem2.classList.replace('selected-true', 'selected-false');
+      gem1.style = null;
+      gem2.style = null;
       // Swap with left neighbor
       if (clicked === selected - 1 && (clicked % WIDTH) !== WIDTH - 1) {
         // Can only swap if a score can happen 
@@ -54,13 +75,27 @@ const Gameboard = props => {
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
         );
+        gem1.style.transform = `translateX(${gem1.offsetHeight / 0.8}px)`;
+        gem2.style.transform = `translateX(-${gem1.offsetHeight / 0.8}px)`;
         if (scores) {
-          let temp = [
-            ...board.slice(0, selected - 1),
-            board[selected], board[selected - 1],
-            ...board.slice(selected + 1)
-          ];
-          setBoard(temp);
+          setTimeout(() => {
+            let temp = [
+              ...board.slice(0, selected - 1),
+              board[selected], board[selected - 1],
+              ...board.slice(selected + 1)
+            ];
+            setBoard(temp);
+            gem1.style = null;
+            gem2.style = null;
+            gem1.style.transition = 'none';
+            gem2.style.transition = 'none';
+            setTimeout(() => setPop(true), DELAY);
+          }, DELAY);
+        } else {
+          setTimeout(() => {
+            gem1.style.transform = `translateX(0px)`;
+            gem2.style.transform = `translateX(0px)`;
+          }, DELAY);
         }
         setSelect(null);
         // Swap with right neighbor
@@ -76,13 +111,27 @@ const Gameboard = props => {
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
         );
+        gem1.style.transform = `translateX(-${gem1.offsetHeight / 0.8}px)`;
+        gem2.style.transform = `translateX(${gem1.offsetHeight / 0.8}px)`;
         if (scores) {
-          let temp = [
-            ...board.slice(0, selected),
-            board[selected + 1], board[selected],
-            ...board.slice(selected + 2)
-          ];
-          setBoard(temp);
+          setTimeout(() => {
+            let temp = [
+              ...board.slice(0, selected),
+              board[selected + 1], board[selected],
+              ...board.slice(selected + 2)
+            ];
+            setBoard(temp);
+            gem1.style = null;
+            gem2.style = null;
+            gem1.style.transition = 'none';
+            gem2.style.transition = 'none';
+            setTimeout(() => setPop(true), DELAY);
+          }, DELAY);
+        } else {
+          setTimeout(() => {
+            gem1.style.transform = `translateX(0px)`;
+            gem2.style.transform = `translateX(0px)`;
+          }, DELAY);
         }
         setSelect(null);
         // Swap with bottom neighbor
@@ -98,15 +147,29 @@ const Gameboard = props => {
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
         );
+        gem1.style.transform = `translateY(-${gem1.offsetHeight / 0.8}px)`;
+        gem2.style.transform = `translateY(${gem1.offsetHeight / 0.8}px)`;
         if (scores) {
-          let temp = [
-            ...board.slice(0, selected),
-            board[selected + WIDTH],
-            ...board.slice(selected + 1, selected + WIDTH),
-            board[selected],
-            ...board.slice(selected + WIDTH + 1)
-          ];
-          setBoard(temp);
+          setTimeout(() => {
+            let temp = [
+              ...board.slice(0, selected),
+              board[selected + WIDTH],
+              ...board.slice(selected + 1, selected + WIDTH),
+              board[selected],
+              ...board.slice(selected + WIDTH + 1)
+            ];
+            setBoard(temp);
+            gem1.style = null;
+            gem2.style = null;
+            gem1.style.transition = 'none';
+            gem2.style.transition = 'none';
+            setTimeout(() => setPop(true), DELAY);
+          }, DELAY);
+        } else {
+          setTimeout(() => {
+            gem1.style.transform = `translateY(0px)`;
+            gem2.style.transform = `translateY(0px)`;
+          }, DELAY);
         }
         setSelect(null);
         // Swap with top neighbor
@@ -122,28 +185,41 @@ const Gameboard = props => {
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
         );
+        gem1.style.transform = `translateY(${gem1.offsetHeight / 0.8}px)`;
+        gem2.style.transform = `translateY(-${gem1.offsetHeight / 0.8}px)`;
         if (scores) {
-          let temp = [
-            ...board.slice(0, selected - WIDTH),
-            board[selected],
-            ...board.slice(selected - WIDTH + 1, selected),
-            board[selected - WIDTH],
-            ...board.slice(selected + 1)
-          ];
-          setBoard(temp);
+          setTimeout(() => {
+            let temp = [
+              ...board.slice(0, selected - WIDTH),
+              board[selected],
+              ...board.slice(selected - WIDTH + 1, selected),
+              board[selected - WIDTH],
+              ...board.slice(selected + 1)
+            ];
+            setBoard(temp);
+            gem1.style = null;
+            gem2.style = null;
+            gem1.style.transition = 'none';
+            gem2.style.transition = 'none';
+            setTimeout(() => setPop(true), DELAY);
+          }, DELAY);
+        } else {
+          setTimeout(() => {
+            gem1.style.transform = `translateY(0px)`;
+            gem2.style.transform = `translateY(0px)`;
+          }, DELAY);
         }
         setSelect(null);
-        // No swap; reset selected
       } else {
         setSelect(clicked);
       }
     };
+  }, [WIDTH, board, select]);
 
-  }, [board, select, WIDTH]);
-
-  /* Check for groups to pop (lines >= 3) */
+  // Check for groups to pop (lines >= 3) then remove those pieces from board
   useEffect(() => {
     if (!started) return;
+    if (!pop) return;
     const lines = [];
     // Horizontal check
     for (let i = 0; i < WIDTH; i++) {
@@ -178,9 +254,12 @@ const Gameboard = props => {
       }
     }
 
-    if(lines.length < 1) return;
+    if (lines.length < 1) {
+      setPop(false);
+      return;
+    }
 
-    // Pop lines
+    // Clear matches
     let temp = board;
     for (const line of lines) {
       for (const space of line) {
@@ -188,12 +267,28 @@ const Gameboard = props => {
       }
     }
     setBoard(temp);
+    setPop(false);
+    // Delay needed to have breaking and dropping effect
+    setTimeout(() => setDrop(true), DELAY);
+    if (repopulate) {
+      setRepopulate(false);
+      setTimeout(() => setRepopulate(true), DELAY);
+    }
+  }, [board, WIDTH, started, pop, drop, repopulate]);
 
-    // Drop lines
+  // Drop existing gems
+  useEffect(() => {
+    if (!started) return;
+    if (!drop) return;
+    if (drop && pop) return;
+    let temp = board;
+    // Drop pieces
+    const seen = new Map();
     for (let i = 0; i < temp.length; i++) {
       if (i + WIDTH < temp.length && temp[i + WIDTH] === 'NONE') {
         for (let j = i + WIDTH; j >= 0; j -= WIDTH) {
-          if (j > WIDTH) {
+          seen.set(j, (seen.get(j - WIDTH) || 0) + 1);
+          if (j >= WIDTH) {
             temp = [...temp.slice(0, j), temp[j - WIDTH], ...temp.slice(j + 1)];
           } else {
             temp = [...temp.slice(0, j), 'NONE', ...temp.slice(j + 1)];
@@ -202,15 +297,48 @@ const Gameboard = props => {
       }
     }
     setBoard(temp);
+    for (const space of seen) {
+      const gem = document.getElementById(space[0]);
+      gem.style.transition = 'none';
+      gem.style.transform = `translateY(-${(gem.offsetHeight / 0.8) * space[1]}px)`;
+      setTimeout(() => {
+        gem.style.transition = null;
+        gem.style.transform = 'translateY(0px)';
+        gem.style = null;
+      }, DELAY / 2);
+    }
+    setDrop(false);
+    setTimeout(() => setPop(true), DELAY);
+    setTimeout(() => setRepopulate(true), DELAY);
+  }, [board, WIDTH, started, pop, drop, repopulate]);
 
+  // Drop replacement gems
+  useEffect(() => {
+    if (!started) return;
+    if (!repopulate) return;
+    if ((repopulate && drop) || (repopulate && pop)) return;
+    let temp = board;
     // Fill empty spaces
+    const list = [];
     for (let i = 0; i < temp.length; i++) {
       if (temp[i] === 'NONE' || temp[i] === undefined) {
         temp = [...temp.slice(0, i), PIECES[Math.random() * PIECES.length | 0], ...temp.slice(i + 1)];
+        list.push(i);
       }
     }
     setBoard(temp);
-  }, [board, WIDTH, started])
+    for (const i of list) {
+      document.getElementById(i).style.transition = 'none';
+      document.getElementById(i).style.transform = 'translateY(-100vh)';
+      setTimeout(() => {
+        document.getElementById(i).style.transition = null;
+        document.getElementById(i).style.transform = 'translateY(0px)';
+        document.getElementById(i).style = null;
+      }, DELAY);
+    }
+    setRepopulate(false);
+    setTimeout(() => setPop(true), DELAY);
+  }, [board, WIDTH, started, pop, drop, repopulate]);
 
   return (
     <div id='gameboard'>
