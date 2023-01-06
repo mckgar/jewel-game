@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import './Gameboard.css';
 
 const Gameboard = props => {
-  const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'ORANGE', 'YELLOW'];
+  const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'PINK', 'YELLOW'];
   const WIDTH = props.width || 8;
-  const DELAY = 300;
+  const DELAY = 250;
   const [board, setBoard] = useState([]);
   const [display, setDisplay] = useState(null);
   const [select, setSelect] = useState(null);
@@ -75,8 +75,8 @@ const Gameboard = props => {
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
         );
-        gem1.style.transform = `translateX(${gem1.offsetHeight / 0.8}px)`;
-        gem2.style.transform = `translateX(-${gem1.offsetHeight / 0.8}px)`;
+        gem1.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+        gem2.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
         if (scores) {
           setTimeout(() => {
             let temp = [
@@ -111,8 +111,8 @@ const Gameboard = props => {
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
           || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
         );
-        gem1.style.transform = `translateX(-${gem1.offsetHeight / 0.8}px)`;
-        gem2.style.transform = `translateX(${gem1.offsetHeight / 0.8}px)`;
+        gem1.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+        gem2.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
         if (scores) {
           setTimeout(() => {
             let temp = [
@@ -147,8 +147,8 @@ const Gameboard = props => {
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
         );
-        gem1.style.transform = `translateY(-${gem1.offsetHeight / 0.8}px)`;
-        gem2.style.transform = `translateY(${gem1.offsetHeight / 0.8}px)`;
+        gem1.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+        gem2.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
         if (scores) {
           setTimeout(() => {
             let temp = [
@@ -185,8 +185,8 @@ const Gameboard = props => {
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
           || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
         );
-        gem1.style.transform = `translateY(${gem1.offsetHeight / 0.8}px)`;
-        gem2.style.transform = `translateY(-${gem1.offsetHeight / 0.8}px)`;
+        gem1.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+        gem2.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
         if (scores) {
           setTimeout(() => {
             let temp = [
@@ -300,7 +300,7 @@ const Gameboard = props => {
     for (const space of seen) {
       const gem = document.getElementById(space[0]);
       gem.style.transition = 'none';
-      gem.style.transform = `translateY(-${(gem.offsetHeight / 0.8) * space[1]}px)`;
+      gem.style.transform = `translateY(-${(Math.max(gem.offsetHeight, gem.offsetWidth) / 0.8) * space[1]}px)`;
       setTimeout(() => {
         gem.style.transition = null;
         gem.style.transform = 'translateY(0px)';
