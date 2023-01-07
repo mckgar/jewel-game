@@ -4,7 +4,7 @@ import './Gameboard.css';
 const Gameboard = props => {
   const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'PINK', 'YELLOW'];
   const WIDTH = props.width || 8;
-  const DELAY = 250;
+  const DELAY = 260;
   const [board, setBoard] = useState([]);
   const [display, setDisplay] = useState(null);
   const [select, setSelect] = useState(null);
@@ -14,6 +14,8 @@ const Gameboard = props => {
   const [pop, setPop] = useState(false);
   const [drop, setDrop] = useState(false);
   const [repopulate, setRepopulate] = useState(false);
+
+  const [dropMap, setDropMap] = useState(new Map());
 
   /* Initial populate */
   useEffect(() => {
@@ -36,185 +38,200 @@ const Gameboard = props => {
   /* draw board */
   useEffect(() => {
     setDisplay(board.map((piece, index) => {
+      let style = null;
+      if (dropMap.has(index)) {
+        const gem = document.getElementById(index);
+        const num = -(Math.max(gem.offsetHeight, gem.offsetWidth) / 0.8) * dropMap.get(index);
+        style = { transition: 'none', transform: `translateY(${num}px)` };
+      }
       return <div
         key={index}
         id={index}
         className={`board-piece ${piece} selected-${select === index}`}
         onClick={e => handleClick(e)}
+        style={style}
       ></div>;
     }));
 
     const handleClick = e => {
       handleSwap(parseInt(e.target.id), parseInt(select));
     }
+  }, [board, select, dropMap]);
 
-    const handleSwap = (clicked, selected) => {
-      if (!selected) {
-        setSelect(clicked);
-        return;
-      }
-      if (clicked === selected) {
-        setSelect(null);
-        return;
-      }
-      const gem1 = document.getElementById(clicked);
-      const gem2 = document.getElementById(selected);
-      gem2.classList.replace('selected-true', 'selected-false');
-      gem1.style = null;
-      gem2.style = null;
-      // Swap with left neighbor
-      if (clicked === selected - 1 && (clicked % WIDTH) !== WIDTH - 1) {
-        // Can only swap if a score can happen 
-        const scores = (
-          (selected % WIDTH > 2 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
-          || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
-          || ((selected / WIDTH | 0) > 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
-          || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
-          || ((selected / WIDTH | 0) < WIDTH - 2 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
-          || ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
-          || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
-          || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
-        );
-        gem1.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        gem2.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        if (scores) {
-          setTimeout(() => {
-            let temp = [
-              ...board.slice(0, selected - 1),
-              board[selected], board[selected - 1],
-              ...board.slice(selected + 1)
-            ];
-            setBoard(temp);
-            gem1.style = null;
-            gem2.style = null;
-            gem1.style.transition = 'none';
-            gem2.style.transition = 'none';
-            setTimeout(() => setPop(true), DELAY);
-          }, DELAY);
-        } else {
-          setTimeout(() => {
-            gem1.style.transform = `translateX(0px)`;
-            gem2.style.transform = `translateX(0px)`;
-          }, DELAY);
-        }
-        setSelect(null);
-        // Swap with right neighbor
-      } else if (clicked === selected + 1 && (clicked % WIDTH) !== 0) {
-        // Can only swap if a score can happen 
-        const scores = (
-          (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
-          || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
-          || ((selected / WIDTH | 0) > 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
-          || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
-          || ((selected / WIDTH | 0) < WIDTH - 2 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
-          || ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
-          || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
-          || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
-        );
-        gem1.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        gem2.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        if (scores) {
-          setTimeout(() => {
-            let temp = [
-              ...board.slice(0, selected),
-              board[selected + 1], board[selected],
-              ...board.slice(selected + 2)
-            ];
-            setBoard(temp);
-            gem1.style = null;
-            gem2.style = null;
-            gem1.style.transition = 'none';
-            gem2.style.transition = 'none';
-            setTimeout(() => setPop(true), DELAY);
-          }, DELAY);
-        } else {
-          setTimeout(() => {
-            gem1.style.transform = `translateX(0px)`;
-            gem2.style.transform = `translateX(0px)`;
-          }, DELAY);
-        }
-        setSelect(null);
-        // Swap with bottom neighbor
-      } else if (clicked === selected + WIDTH) {
-        // Can only swap if a score can happen
-        const scores = (
-          ((selected / WIDTH | 0) < WIDTH - 3 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
-          || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
-          || (selected % WIDTH > 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
-          || (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
-          || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
-          || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
-          || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
-          || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
-        );
-        gem1.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        gem2.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        if (scores) {
-          setTimeout(() => {
-            let temp = [
-              ...board.slice(0, selected),
-              board[selected + WIDTH],
-              ...board.slice(selected + 1, selected + WIDTH),
-              board[selected],
-              ...board.slice(selected + WIDTH + 1)
-            ];
-            setBoard(temp);
-            gem1.style = null;
-            gem2.style = null;
-            gem1.style.transition = 'none';
-            gem2.style.transition = 'none';
-            setTimeout(() => setPop(true), DELAY);
-          }, DELAY);
-        } else {
-          setTimeout(() => {
-            gem1.style.transform = `translateY(0px)`;
-            gem2.style.transform = `translateY(0px)`;
-          }, DELAY);
-        }
-        setSelect(null);
-        // Swap with top neighbor
-      } else if (clicked === selected - WIDTH) {
-        // Can only swap if a score can happen
-        const scores = (
-          ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
-          || ((selected / WIDTH | 0) > 2 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
-          || (selected % WIDTH > 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
-          || (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
-          || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
-          || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
-          || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
-          || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
-        );
-        gem1.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        gem2.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
-        if (scores) {
-          setTimeout(() => {
-            let temp = [
-              ...board.slice(0, selected - WIDTH),
-              board[selected],
-              ...board.slice(selected - WIDTH + 1, selected),
-              board[selected - WIDTH],
-              ...board.slice(selected + 1)
-            ];
-            setBoard(temp);
-            gem1.style = null;
-            gem2.style = null;
-            gem1.style.transition = 'none';
-            gem2.style.transition = 'none';
-            setTimeout(() => setPop(true), DELAY);
-          }, DELAY);
-        } else {
-          setTimeout(() => {
-            gem1.style.transform = `translateY(0px)`;
-            gem2.style.transform = `translateY(0px)`;
-          }, DELAY);
-        }
-        setSelect(null);
+  const handleSwap = (clicked, selected) => {
+    if (!selected) {
+      setSelect(clicked);
+      return;
+    }
+    if (clicked === selected) {
+      setSelect(null);
+      return;
+    }
+    const gem1 = document.getElementById(clicked);
+    const gem2 = document.getElementById(selected);
+    gem2.classList.replace('selected-true', 'selected-false');
+    gem1.style = null;
+    gem2.style = null;
+    // Swap with left neighbor
+    if (clicked === selected - 1 && (clicked % WIDTH) !== WIDTH - 1) {
+      // Can only swap if a score can happen 
+      const scores = (
+        (selected % WIDTH > 2 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
+        || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
+        || ((selected / WIDTH | 0) > 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
+        || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
+        || ((selected / WIDTH | 0) < WIDTH - 2 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
+        || ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
+        || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
+        || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
+      );
+      gem1.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      gem2.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      if (scores) {
+        setTimeout(() => {
+          let temp = [
+            ...board.slice(0, selected - 1),
+            board[selected], board[selected - 1],
+            ...board.slice(selected + 1)
+          ];
+          setBoard(temp);
+          gem1.style = null;
+          gem2.style = null;
+          gem1.style.transition = 'none';
+          gem2.style.transition = 'none';
+          setTimeout(() => setPop(true), DELAY);
+        }, DELAY);
       } else {
-        setSelect(clicked);
+        setTimeout(() => {
+          gem1.style.transform = `translateX(0px)`;
+          gem2.style.transform = `translateX(0px)`;
+          gem1.style = null;
+          gem2.style = null;
+        }, DELAY);
       }
-    };
-  }, [WIDTH, board, select]);
+      setSelect(null);
+      // Swap with right neighbor
+    } else if (clicked === selected + 1 && (clicked % WIDTH) !== 0) {
+      // Can only swap if a score can happen 
+      const scores = (
+        (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
+        || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
+        || ((selected / WIDTH | 0) > 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
+        || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
+        || ((selected / WIDTH | 0) < WIDTH - 2 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
+        || ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
+        || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked + WIDTH])
+        || ((selected / WIDTH | 0) > 0 && selected / WIDTH | 0 < WIDTH - 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected + WIDTH])
+      );
+      gem1.style.transform = `translateX(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      gem2.style.transform = `translateX(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      if (scores) {
+        setTimeout(() => {
+          let temp = [
+            ...board.slice(0, selected),
+            board[selected + 1], board[selected],
+            ...board.slice(selected + 2)
+          ];
+          setBoard(temp);
+          gem1.style = null;
+          gem2.style = null;
+          gem1.style.transition = 'none';
+          gem2.style.transition = 'none';
+          setTimeout(() => setPop(true), DELAY);
+        }, DELAY);
+      } else {
+        setTimeout(() => {
+          gem1.style.transform = `translateX(0px)`;
+          gem2.style.transform = `translateX(0px)`;
+          gem1.style = null;
+          gem2.style = null;
+        }, DELAY);
+      }
+      setSelect(null);
+      // Swap with bottom neighbor
+    } else if (clicked === selected + WIDTH) {
+      // Can only swap if a score can happen
+      const scores = (
+        ((selected / WIDTH | 0) < WIDTH - 3 && board[selected] === board[clicked + WIDTH] && board[selected] === board[clicked + WIDTH * 2])
+        || ((selected / WIDTH | 0) > 1 && board[clicked] === board[selected - WIDTH] && board[clicked] === board[selected - WIDTH * 2])
+        || (selected % WIDTH > 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
+        || (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
+        || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
+        || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
+        || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
+        || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
+      );
+      gem1.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      gem2.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      if (scores) {
+        setTimeout(() => {
+          let temp = [
+            ...board.slice(0, selected),
+            board[selected + WIDTH],
+            ...board.slice(selected + 1, selected + WIDTH),
+            board[selected],
+            ...board.slice(selected + WIDTH + 1)
+          ];
+          setBoard(temp);
+          gem1.style = null;
+          gem2.style = null;
+          gem1.style.transition = 'none';
+          gem2.style.transition = 'none';
+          setTimeout(() => setPop(true), DELAY);
+        }, DELAY);
+      } else {
+        setTimeout(() => {
+          gem1.style.transform = `translateY(0px)`;
+          gem2.style.transform = `translateY(0px)`;
+          gem1.style = null;
+          gem2.style = null;
+        }, DELAY);
+      }
+      setSelect(null);
+      // Swap with top neighbor
+    } else if (clicked === selected - WIDTH) {
+      // Can only swap if a score can happen
+      const scores = (
+        ((selected / WIDTH | 0) < WIDTH - 2 && board[clicked] === board[selected + WIDTH] && board[clicked] === board[selected + WIDTH * 2])
+        || ((selected / WIDTH | 0) > 2 && board[selected] === board[clicked - WIDTH] && board[selected] === board[clicked - WIDTH * 2])
+        || (selected % WIDTH > 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked - 2])
+        || (selected % WIDTH < WIDTH - 2 && board[selected] === board[clicked + 1] && board[selected] === board[clicked + 2])
+        || (selected % WIDTH > 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected - 2])
+        || (selected % WIDTH < WIDTH - 2 && board[clicked] === board[selected + 1] && board[clicked] === board[selected + 2])
+        || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[selected] === board[clicked - 1] && board[selected] === board[clicked + 1])
+        || (selected % WIDTH > 0 && selected % WIDTH < WIDTH - 1 && board[clicked] === board[selected - 1] && board[clicked] === board[selected + 1])
+      );
+      gem1.style.transform = `translateY(${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      gem2.style.transform = `translateY(-${Math.max(gem1.offsetHeight, gem1.offsetWidth) / 0.8}px)`;
+      if (scores) {
+        setTimeout(() => {
+          let temp = [
+            ...board.slice(0, selected - WIDTH),
+            board[selected],
+            ...board.slice(selected - WIDTH + 1, selected),
+            board[selected - WIDTH],
+            ...board.slice(selected + 1)
+          ];
+          setBoard(temp);
+          gem1.style = null;
+          gem2.style = null;
+          gem1.style.transition = 'none';
+          gem2.style.transition = 'none';
+          setTimeout(() => setPop(true), DELAY);
+        }, DELAY);
+      } else {
+        setTimeout(() => {
+          gem1.style.transform = `translateY(0px)`;
+          gem2.style.transform = `translateY(0px)`;
+          gem1.style = null;
+          gem2.style = null;
+        }, DELAY);
+      }
+      setSelect(null);
+    } else {
+      setSelect(clicked);
+    }
+  };
 
   // Check for groups to pop (lines >= 3) then remove those pieces from board
   useEffect(() => {
@@ -270,11 +287,8 @@ const Gameboard = props => {
     setPop(false);
     // Delay needed to have breaking and dropping effect
     setTimeout(() => setDrop(true), DELAY);
-    if (repopulate) {
-      setRepopulate(false);
-      setTimeout(() => setRepopulate(true), DELAY);
-    }
-  }, [board, WIDTH, started, pop, drop, repopulate]);
+    setTimeout(() => setRepopulate(b => b), DELAY);
+  }, [started, pop]);
 
   // Drop existing gems
   useEffect(() => {
@@ -284,39 +298,36 @@ const Gameboard = props => {
     let temp = board;
     // Drop pieces
     const seen = new Map();
-    for (let i = 0; i < temp.length; i++) {
-      if (i + WIDTH < temp.length && temp[i + WIDTH] === 'NONE') {
+    for (let i = 0; i < temp.length - WIDTH; i++) {
+      if (temp[i + WIDTH] === 'NONE') {
         for (let j = i + WIDTH; j >= 0; j -= WIDTH) {
           seen.set(j, (seen.get(j - WIDTH) || 0) + 1);
-          if (j >= WIDTH) {
-            temp = [...temp.slice(0, j), temp[j - WIDTH], ...temp.slice(j + 1)];
-          } else {
-            temp = [...temp.slice(0, j), 'NONE', ...temp.slice(j + 1)];
+          temp = [...temp.slice(0, j), temp[j - WIDTH] || 'NONE', ...temp.slice(j + 1)];
+
+          if (j >= 0) {
+            const gem = document.getElementById(j);
+            setTimeout(() => {
+              gem.style = null;
+            }, DELAY);
           }
         }
       }
     }
     setBoard(temp);
-    for (const space of seen) {
-      const gem = document.getElementById(space[0]);
-      gem.style.transition = 'none';
-      gem.style.transform = `translateY(-${(Math.max(gem.offsetHeight, gem.offsetWidth) / 0.8) * space[1]}px)`;
-      setTimeout(() => {
-        gem.style.transition = null;
-        gem.style.transform = 'translateY(0px)';
-        gem.style = null;
-      }, DELAY / 2);
-    }
+    setDropMap(seen);
     setDrop(false);
-    setTimeout(() => setPop(true), DELAY);
-    setTimeout(() => setRepopulate(true), DELAY);
-  }, [board, WIDTH, started, pop, drop, repopulate]);
+    setTimeout(() => {
+      setDropMap(new Map());
+      setTimeout(() => setPop(true), DELAY);
+      setTimeout(() => setRepopulate(true), DELAY);
+    }, DELAY)
+  }, [started, pop, drop]);
 
   // Drop replacement gems
   useEffect(() => {
     if (!started) return;
     if (!repopulate) return;
-    if ((repopulate && drop) || (repopulate && pop)) return;
+    if ((repopulate && drop)) return;
     let temp = board;
     // Fill empty spaces
     const list = [];
@@ -338,7 +349,7 @@ const Gameboard = props => {
     }
     setRepopulate(false);
     setTimeout(() => setPop(true), DELAY);
-  }, [board, WIDTH, started, pop, drop, repopulate]);
+  }, [started, drop, repopulate]);
 
   return (
     <div id='gameboard'>
