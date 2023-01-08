@@ -16,6 +16,7 @@ const Gameboard = props => {
   const [repopulate, setRepopulate] = useState(false);
 
   const [dropMap, setDropMap] = useState(new Map());
+  const [popSinceClick, setPopSinceClick] = useState(0);
 
   /* Initial populate */
   useEffect(() => {
@@ -54,6 +55,7 @@ const Gameboard = props => {
     }));
 
     const handleClick = e => {
+      setPopSinceClick(0);
       handleSwap(parseInt(e.target.id), parseInt(select));
     }
   }, [board, select, dropMap]);
@@ -237,7 +239,7 @@ const Gameboard = props => {
   useEffect(() => {
     if (!started) return;
     if (!pop) return;
-    const lines = [];
+    let lines = [];
     // Horizontal check
     for (let i = 0; i < WIDTH; i++) {
       for (let j = 0; j < WIDTH - 2; j++) {
@@ -279,10 +281,16 @@ const Gameboard = props => {
     // Clear matches
     let temp = board;
     for (const line of lines) {
+      const base = 10;
+      const weight = (line.length - 2) * (line.length - 2);
+      const cluster = lines.length;
+      const multiplier = popSinceClick + 1;
+      props.increaseScore(base * weight * cluster * multiplier);
       for (const space of line) {
         temp = [...temp.slice(0, space), 'NONE', ...temp.slice(space + 1)];
       }
     }
+    setPopSinceClick(p => p + lines.length);
     setBoard(temp);
     setPop(false);
     // Delay needed to have breaking and dropping effect
