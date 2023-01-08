@@ -55,10 +55,11 @@ const Gameboard = props => {
     }));
 
     const handleClick = e => {
+      if (pop || drop || repopulate) return;
       setPopSinceClick(0);
       handleSwap(parseInt(e.target.id), parseInt(select));
     }
-  }, [board, select, dropMap]);
+  }, [board, select, dropMap, pop, drop, repopulate]);
 
   const handleSwap = (clicked, selected) => {
     if (!selected) {
@@ -292,17 +293,17 @@ const Gameboard = props => {
     }
     setPopSinceClick(p => p + lines.length);
     setBoard(temp);
-    setPop(false);
     // Delay needed to have breaking and dropping effect
-    setTimeout(() => setDrop(true), DELAY);
-    setTimeout(() => setRepopulate(b => b), DELAY);
+    setTimeout(() => {
+      setPop(false);
+      setDrop(true)
+    }, DELAY);
   }, [started, pop]);
 
   // Drop existing gems
   useEffect(() => {
     if (!started) return;
     if (!drop) return;
-    if (drop && pop) return;
     let temp = board;
     // Drop pieces
     const seen = new Map();
@@ -323,19 +324,17 @@ const Gameboard = props => {
     }
     setBoard(temp);
     setDropMap(seen);
-    setDrop(false);
+    setTimeout(() => setDropMap(new Map()), DELAY)
     setTimeout(() => {
-      setDropMap(new Map());
-      setTimeout(() => setPop(true), DELAY);
-      setTimeout(() => setRepopulate(true), DELAY);
-    }, DELAY)
-  }, [started, pop, drop]);
+      setDrop(false);
+      setRepopulate(true)
+    }, DELAY);
+  }, [started, drop]);
 
   // Drop replacement gems
   useEffect(() => {
     if (!started) return;
     if (!repopulate) return;
-    if ((repopulate && drop)) return;
     let temp = board;
     // Fill empty spaces
     const list = [];
@@ -355,9 +354,11 @@ const Gameboard = props => {
         document.getElementById(i).style = null;
       }, DELAY);
     }
-    setRepopulate(false);
-    setTimeout(() => setPop(true), DELAY);
-  }, [started, drop, repopulate]);
+    setTimeout(() => {
+      setRepopulate(false);
+      setPop(true)
+    }, DELAY * 2);
+  }, [started, repopulate]);
 
   return (
     <div id='gameboard'>
