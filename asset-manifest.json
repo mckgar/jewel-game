@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/mckgar.github.io/jewel-game/static/css/main.4fdd5b3f.css",
-    "main.js": "/mckgar.github.io/jewel-game/static/js/main.ccb84428.js",
-    "index.html": "/mckgar.github.io/jewel-game/index.html",
-    "main.4fdd5b3f.css.map": "/mckgar.github.io/jewel-game/static/css/main.4fdd5b3f.css.map",
-    "main.ccb84428.js.map": "/mckgar.github.io/jewel-game/static/js/main.ccb84428.js.map"
+    "main.css": "/jewel-game/static/css/main.4fdd5b3f.css",
+    "main.js": "/jewel-game/static/js/main.ccb84428.js",
+    "index.html": "/jewel-game/index.html",
+    "main.4fdd5b3f.css.map": "/jewel-game/static/css/main.4fdd5b3f.css.map",
+    "main.ccb84428.js.map": "/jewel-game/static/js/main.ccb84428.js.map"
   },
   "entrypoints": [
     "static/css/main.4fdd5b3f.css",
