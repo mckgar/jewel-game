@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import './Gameboard.css';
+import Blue from '../images/GemBlue.svg';
+import Green from '../images/GemGreen.svg';
+import Orange from '../images/GemOrange.svg';
+import Purple from '../images/GemPurple.svg';
+import Red from '../images/GemRed.svg';
+import White from '../images/GemWhite.svg';
+import Yellow from '../images/GemYellow.svg';
 
 const Gameboard = props => {
-  const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'PINK', 'YELLOW'];
+  const PIECES = ['WHITE', 'RED', 'BLUE', 'GREEN', 'PURPLE', 'ORANGE', 'YELLOW'];
   const WIDTH = props.width || 8;
   const DELAY = 260;
   const [board, setBoard] = useState([]);
@@ -45,13 +52,40 @@ const Gameboard = props => {
         const num = -(Math.max(gem.offsetHeight, gem.offsetWidth) / 0.8) * dropMap.get(index);
         style = { transition: 'none', transform: `translateY(${num}px)` };
       }
-      return <div
+      let image = null;
+      switch (piece) {
+        case 'BLUE':
+          image = Blue;
+          break;
+        case 'GREEN':
+          image = Green;
+          break;
+        case 'ORANGE':
+          image = Orange;
+          break;
+        case 'PURPLE':
+          image = Purple;
+          break;
+        case 'RED':
+          image = Red;
+          break;
+        case 'WHITE':
+          image = White;
+          break;
+        case 'YELLOW':
+          image = Yellow;
+          break;
+        default:
+          break;
+      }
+      return <img
+        src={image}
         key={index}
         id={index}
         className={`board-piece ${piece} selected-${select === index}`}
         onClick={e => handleClick(e)}
         style={style}
-      ></div>;
+      ></img>;
     }));
 
     const handleClick = e => {
@@ -328,7 +362,7 @@ const Gameboard = props => {
     setTimeout(() => {
       setDrop(false);
       setRepopulate(true)
-    }, DELAY);
+    }, DELAY * 1.5);
   }, [started, drop]);
 
   // Drop replacement gems
