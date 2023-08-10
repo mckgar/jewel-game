@@ -1,13 +1,20 @@
 {
   "files": {
-    "main.css": "/jewel-game/static/css/main.4fdd5b3f.css",
-    "main.js": "/jewel-game/static/js/main.ccb84428.js",
-    "index.html": "/jewel-game/index.html",
-    "main.4fdd5b3f.css.map": "/jewel-game/static/css/main.4fdd5b3f.css.map",
-    "main.ccb84428.js.map": "/jewel-game/static/js/main.ccb84428.js.map"
+    "main.css": "/mckgar.github.io/jewel-game/static/css/main.300e0d56.css",
+    "main.js": "/mckgar.github.io/jewel-game/static/js/main.4a7b0402.js",
+    "static/media/GemBlue.svg": "/mckgar.github.io/jewel-game/static/media/GemBlue.6a621f1b2d69fcd28b53220359cb8588.svg",
+    "static/media/GemRed.svg": "/mckgar.github.io/jewel-game/static/media/GemRed.5586ff1fe738c32de357f5390f0466df.svg",
+    "static/media/GemGreen.svg": "/mckgar.github.io/jewel-game/static/media/GemGreen.630ce054f8311cfaf8add1f024b8a5cf.svg",
+    "static/media/GemPurple.svg": "/mckgar.github.io/jewel-game/static/media/GemPurple.54f7671829e04087825bdaeb40aec75f.svg",
+    "static/media/GemWhite.svg": "/mckgar.github.io/jewel-game/static/media/GemWhite.75d70ca93c1bb1516f374ed8241f4bd0.svg",
+    "static/media/GemOrange.svg": "/mckgar.github.io/jewel-game/static/media/GemOrange.392c998eb02ac17394196235f1510e61.svg",
+    "static/media/GemYellow.svg": "/mckgar.github.io/jewel-game/static/media/GemYellow.fcbb2aff82af0acbd31e6477282e349b.svg",
+    "index.html": "/mckgar.github.io/jewel-game/index.html",
+    "main.300e0d56.css.map": "/mckgar.github.io/jewel-game/static/css/main.300e0d56.css.map",
+    "main.4a7b0402.js.map": "/mckgar.github.io/jewel-game/static/js/main.4a7b0402.js.map"
   },
   "entrypoints": [
-    "static/css/main.4fdd5b3f.css",
-    "static/js/main.ccb84428.js"
+    "static/css/main.300e0d56.css",
+    "static/js/main.4a7b0402.js"
   ]
 }

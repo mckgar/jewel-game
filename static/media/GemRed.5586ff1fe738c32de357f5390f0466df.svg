@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="365.98" height="365.98" version="1.1" viewBox="0 0 96.831 96.831" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(-60.994 -100.54)" stroke-linecap="round" stroke-linejoin="round">
+  <path transform="matrix(.59615 0 0 .59615 59.251 55.426)" d="m84.137 108.48 41.929 24.208v48.416l-41.929 24.208-41.929-24.208 2e-6 -48.416z" fill="#fb4b4e" stroke-width=".79375"/>
+  <g stroke-width=".47319">
+   <path d="m109.41 100.54-41.929 24.208 16.933 9.7762 24.996-14.431z" fill="#feb3b4"/>
+   <path d="m109.41 197.38 41.929-24.208-16.933-9.7762-24.996 14.431z" fill="#990507"/>
+   <path d="m109.41 197.38-41.929-24.208 16.933-9.7762 24.996 14.431z" fill="#c60609"/>
+   <path d="m109.41 100.54 41.929 24.208-16.933 9.7762-24.996-14.431z" fill="#860406"/>
+   <path d="m67.48 173.17-1.3e-5 -48.416 16.933 9.7766 1.82e-4 28.863z" fill="#e60509"/>
+   <path d="m151.34 124.75 1e-5 48.416-16.933-9.7766-1.9e-4 -28.863z" fill="#b60205"/>
+  </g>
+ </g>
+</svg>
