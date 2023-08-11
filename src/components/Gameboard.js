@@ -26,6 +26,8 @@ const Gameboard = props => {
   const [popSinceClick, setPopSinceClick] = useState(0);
 
   const [dragging, setDragging] = useState(false);
+  const [touchX, setTouchX] = useState(null);
+  const [touchY, setTouchY] = useState(null);
 
   /* Initial populate */
   useEffect(() => {
@@ -90,6 +92,8 @@ const Gameboard = props => {
         draggable={false}
         onMouseDown={e => handleMouseDown(e)}
         onMouseOver={e => handleMouseOver(e)}
+        onTouchStart={e => handleTouchStart(e)}
+        onTouchMove={e => handleTouchMove(e)}
       ></img>;
     }));
 
@@ -110,24 +114,62 @@ const Gameboard = props => {
       setPopSinceClick(0);
       handleMouseOverSwap(parseInt(e.target.id));
     };
-  }, [board, select, dropMap, pop, drop, repopulate, dragging]);
+
+    const handleTouchStart = e => {
+      if (pop || drop || repopulate) return;
+      setPopSinceClick(0);
+      handleTouchStartSet(e);
+    };
+
+    const handleTouchMove = e => {
+      if (pop || drop || repopulate || !select) return;
+      setPopSinceClick(0);
+      const x = e.changedTouches[0].clientX;
+      const y = e.changedTouches[0].clientY;
+      const dx = x - touchX;
+      const dy = y - touchY;
+      if (dx === 0 && dy === 0) return;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        handleHorizontalSwap(dx > 0);
+        return;
+      }
+      if (Math.abs(dx) < Math.abs(dy)) {
+        handleVerticalSwap(dy > 0);
+        return;
+      }
+    };
+  }, [board, select, dropMap, pop, drop, repopulate, dragging, touchX, touchY]);
 
   const checkLegalSwap = move => {
     return (
-      move === select - 1 && (move % WIDTH) !== WIDTH - 1 ||
-      move === select + 1 && (move % WIDTH) !== 0 ||
-      move === select + WIDTH ||
-      move === select - WIDTH
+      (move >= 0 && move < WIDTH * WIDTH) &&
+      (
+        (move === select - 1 && (move % WIDTH) !== WIDTH - 1) ||
+        (move === select + 1 && (move % WIDTH) !== 0) ||
+        move === select + WIDTH ||
+        move === select - WIDTH
+      )
     );
   };
 
   const handleMouseDownSet = clicked => {
-    if (!select || !checkLegalSwap(clicked)) {  
+    if (!select || !checkLegalSwap(clicked)) {
       setSelect(clicked);
       setDragging(true);
       return;
     }
   };
+
+  const handleTouchStartSet = e => {
+    const clicked = parseInt(e.target.id);
+    if (!select || !checkLegalSwap(clicked)) {
+      setTouchX(e.changedTouches[0].clientX);
+      setTouchY(e.changedTouches[0].clientY);
+      setSelect(clicked);
+      setDragging(true);
+      return;
+    }
+  }
 
   const handleClickSwap = clicked => {
     if (dragging) {
@@ -148,6 +190,28 @@ const Gameboard = props => {
   const handleMouseOverSwap = mouseOver => {
     if (!dragging || !select || mouseOver === select || !checkLegalSwap(mouseOver)) return;
     handleSwap(mouseOver, select);
+  };
+
+  const handleHorizontalSwap = swapRight => {
+    if (swapRight && checkLegalSwap(select + 1)) {
+      handleSwap(select + 1, select);
+      return;
+    }
+    if (!swapRight && checkLegalSwap(select - 1)) {
+      handleSwap(select - 1, select);
+      return;
+    }
+  };
+
+  const handleVerticalSwap = swapDown => {
+    if (swapDown && checkLegalSwap(select + WIDTH)) {
+      handleSwap(select + WIDTH, select);
+      return;
+    }
+    if (!swapDown && checkLegalSwap(select - WIDTH)) {
+      handleSwap(select - WIDTH, select);
+      return;
+    }
   };
 
   const handleSwap = (clicked, selected) => {
