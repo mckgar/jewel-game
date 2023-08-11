@@ -2,7 +2,7 @@
   "short_name": "Jewel Game",
   "name": "Jewel Game",
   "icons": [
-    
+    { "source": "./GemWhite.svg", "type": "image/svg"}
   ],
   "start_url": ".",
   "display": "standalone",
