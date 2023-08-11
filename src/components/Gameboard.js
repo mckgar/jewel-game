@@ -85,6 +85,7 @@ const Gameboard = props => {
         className={`board-piece ${piece} selected-${select === index}`}
         onClick={e => handleClick(e)}
         style={style}
+        draggable={false}
       ></img>;
     }));
 

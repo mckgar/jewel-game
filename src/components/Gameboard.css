@@ -20,6 +20,12 @@
   justify-self: center;
   width: var(--size);
   height: auto;
+
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 /* Gem Colors and Shapes */
@@ -43,6 +49,7 @@
   from {
     transform: rotateY(0deg);
   }
+
   to {
     transform: rotateY(360deg);
   }
