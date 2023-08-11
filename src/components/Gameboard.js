@@ -25,6 +25,8 @@ const Gameboard = props => {
   const [dropMap, setDropMap] = useState(new Map());
   const [popSinceClick, setPopSinceClick] = useState(0);
 
+  const [dragging, setDragging] = useState(false);
+
   /* Initial populate */
   useEffect(() => {
     const newBoard = [];
@@ -86,25 +88,69 @@ const Gameboard = props => {
         onClick={e => handleClick(e)}
         style={style}
         draggable={false}
+        onMouseDown={e => handleMouseDown(e)}
+        onMouseOver={e => handleMouseOver(e)}
       ></img>;
     }));
 
     const handleClick = e => {
       if (pop || drop || repopulate) return;
       setPopSinceClick(0);
-      handleSwap(parseInt(e.target.id), parseInt(select));
-    }
-  }, [board, select, dropMap, pop, drop, repopulate]);
+      handleClickSwap(parseInt(e.target.id));
+    };
 
-  const handleSwap = (clicked, selected) => {
-    if (!selected) {
+    const handleMouseDown = e => {
+      if (pop || drop || repopulate) return;
+      setPopSinceClick(0);
+      handleMouseDownSet(parseInt(e.target.id));
+    };
+
+    const handleMouseOver = e => {
+      if (pop || drop || repopulate || !dragging || !select || select === parseInt(e.target.id)) return;
+      setPopSinceClick(0);
+      handleMouseOverSwap(parseInt(e.target.id));
+    };
+  }, [board, select, dropMap, pop, drop, repopulate, dragging]);
+
+  const checkLegalSwap = move => {
+    return (
+      move === select - 1 && (move % WIDTH) !== WIDTH - 1 ||
+      move === select + 1 && (move % WIDTH) !== 0 ||
+      move === select + WIDTH ||
+      move === select - WIDTH
+    );
+  };
+
+  const handleMouseDownSet = clicked => {
+    if (!select || !checkLegalSwap(clicked)) {  
+      setSelect(clicked);
+      setDragging(true);
+      return;
+    }
+  };
+
+  const handleClickSwap = clicked => {
+    if (dragging) {
+      setDragging(false);
+      return;
+    }
+    if (!select) {
       setSelect(clicked);
       return;
     }
-    if (clicked === selected) {
+    if (clicked === select) {
       setSelect(null);
       return;
     }
+    handleSwap(clicked, select);
+  };
+
+  const handleMouseOverSwap = mouseOver => {
+    if (!dragging || !select || mouseOver === select || !checkLegalSwap(mouseOver)) return;
+    handleSwap(mouseOver, select);
+  };
+
+  const handleSwap = (clicked, selected) => {
     const gem1 = document.getElementById(clicked);
     const gem2 = document.getElementById(selected);
     gem2.classList.replace('selected-true', 'selected-false');
