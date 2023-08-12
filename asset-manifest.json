@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/jewel-game/static/css/main.300e0d56.css",
-    "main.js": "/jewel-game/static/js/main.5a8e5aec.js",
+    "main.css": "/jewel-game/static/css/main.0c3b75a9.css",
+    "main.js": "/jewel-game/static/js/main.0aa04871.js",
     "static/media/GemBlue.svg": "/jewel-game/static/media/GemBlue.6a621f1b2d69fcd28b53220359cb8588.svg",
     "static/media/GemRed.svg": "/jewel-game/static/media/GemRed.5586ff1fe738c32de357f5390f0466df.svg",
     "static/media/GemGreen.svg": "/jewel-game/static/media/GemGreen.630ce054f8311cfaf8add1f024b8a5cf.svg",
@@ -10,11 +10,11 @@
     "static/media/GemOrange.svg": "/jewel-game/static/media/GemOrange.392c998eb02ac17394196235f1510e61.svg",
     "static/media/GemYellow.svg": "/jewel-game/static/media/GemYellow.fcbb2aff82af0acbd31e6477282e349b.svg",
     "index.html": "/jewel-game/index.html",
-    "main.300e0d56.css.map": "/jewel-game/static/css/main.300e0d56.css.map",
-    "main.5a8e5aec.js.map": "/jewel-game/static/js/main.5a8e5aec.js.map"
+    "main.0c3b75a9.css.map": "/jewel-game/static/css/main.0c3b75a9.css.map",
+    "main.0aa04871.js.map": "/jewel-game/static/js/main.0aa04871.js.map"
   },
   "entrypoints": [
-    "static/css/main.300e0d56.css",
-    "static/js/main.5a8e5aec.js"
+    "static/css/main.0c3b75a9.css",
+    "static/js/main.0aa04871.js"
   ]
 }
